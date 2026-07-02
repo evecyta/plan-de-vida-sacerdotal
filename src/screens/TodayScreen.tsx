@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { sections } from "@/data/sections";
+nimport { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -62,29 +63,6 @@ const percentage = useMemo(
   () => StatisticsService.percentage(devotions),
   [devotions]
 );
-
-  const sections = [
-    {
-      title: "📖 Liturgia de las Horas",
-      category: "Liturgia",
-    },
-    {
-      title: "🕊 Meditación",
-      category: "Meditación",
-    },
-    {
-      title: "🙏 Devociones",
-      category: "Devociones",
-    },
-    {
-      title: "📚 Formación",
-      category: "Formación",
-    },
-    {
-      title: "❤️ Ofrecimientos",
-      category: "Ofrecimientos",
-    },
-  ];
 
   return (
     <SafeAreaView style={styles.container}>

@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
   },
 
   pressed: {
@@ -52,9 +53,9 @@ const styles = StyleSheet.create({
   },
 
   circle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     borderWidth: 2,
     borderColor: "#C7CDD5",
     alignItems: "center",
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
 
   title: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: 18,
     fontSize: 17,
     color: "#1C1C1E",
   },

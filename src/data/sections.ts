@@ -1,27 +1,22 @@
-export interface Section {
-  id: string;
-  title: string;
-}
-
-export const sections: Section[] = [
+export const sections = [
   {
-    id: "Liturgia",
     title: "📖 Liturgia de las Horas",
+    category: "Liturgia",
   },
   {
-    id: "Meditación",
     title: "🕊 Meditación",
+    category: "Meditación",
   },
   {
-    id: "Devociones",
     title: "🙏 Devociones",
+    category: "Devociones",
   },
   {
-    id: "Formación",
     title: "📚 Formación",
+    category: "Formación",
   },
   {
-    id: "Ofrecimientos",
     title: "❤️ Ofrecimientos",
+    category: "Ofrecimientos",
   },
 ];

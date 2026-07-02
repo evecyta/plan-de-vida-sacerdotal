@@ -11,14 +11,22 @@ export default function ProgressCard({
   completed,
   total,
 }: Props) {
+  const remaining = total - completed;
+
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Progreso de hoy</Text>
+      <Text style={styles.title}>
+        Camino de hoy
+      </Text>
 
       <View style={styles.percentContainer}>
-        <Text style={styles.percent}>{percentage}</Text>
+        <Text style={styles.percent}>
+          {percentage}
+        </Text>
 
-        <Text style={styles.percentSymbol}>%</Text>
+        <Text style={styles.percentSymbol}>
+          %
+        </Text>
       </View>
 
       <View style={styles.barBackground}>
@@ -32,9 +40,27 @@ export default function ProgressCard({
         />
       </View>
 
-      <Text style={styles.subtitle}>
-        {completed} de {total} completadas
-      </Text>
+      <View style={styles.footer}>
+        <View>
+          <Text style={styles.value}>
+            {completed}
+          </Text>
+
+          <Text style={styles.label}>
+            Completadas
+          </Text>
+        </View>
+
+        <View>
+          <Text style={styles.value}>
+            {remaining}
+          </Text>
+
+          <Text style={styles.label}>
+            Pendientes
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -42,13 +68,13 @@ export default function ProgressCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    borderRadius: 24,
     padding: 24,
-    marginBottom: 24,
+    marginBottom: 28,
 
     shadowColor: "#000",
     shadowOpacity: 0.08,
-    shadowRadius: 10,
+    shadowRadius: 12,
     shadowOffset: {
       width: 0,
       height: 3,
@@ -59,21 +85,21 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize: 16,
-    color: "#666",
-    marginBottom: 14,
+    color: "#777",
   },
 
   percentContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "flex-start",
+    marginTop: 12,
   },
 
   percent: {
-    fontSize: 52,
+    fontSize: 56,
     fontWeight: "700",
     color: "#123B63",
-    lineHeight: 58,
+    lineHeight: 60,
   },
 
   percentSymbol: {
@@ -85,11 +111,11 @@ const styles = StyleSheet.create({
   },
 
   barBackground: {
-    height: 12,
-    backgroundColor: "#E5E7EB",
-    borderRadius: 10,
-    overflow: "hidden",
     marginTop: 18,
+    height: 10,
+    borderRadius: 10,
+    backgroundColor: "#E8EBEF",
+    overflow: "hidden",
   },
 
   barFill: {
@@ -98,10 +124,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  subtitle: {
+  footer: {
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+
+  value: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#123B63",
     textAlign: "center",
-    marginTop: 14,
-    color: "#666",
-    fontSize: 16,
+  },
+
+  label: {
+    marginTop: 4,
+    fontSize: 13,
+    color: "#777",
+    textAlign: "center",
   },
 });

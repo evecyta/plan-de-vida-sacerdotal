@@ -12,7 +12,13 @@ export default function SectionCard({
 }: Props) {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>
+          {title}
+        </Text>
+      </View>
+
+      <View style={styles.divider} />
 
       <View style={styles.content}>
         {children}
@@ -25,32 +31,43 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
 
-    borderRadius: 20,
+    borderRadius: 24,
 
-    padding: 20,
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 10,
 
-    marginBottom: 18,
+    marginBottom: 22,
 
     shadowColor: "#000",
-
     shadowOpacity: 0.06,
-
-    shadowRadius: 8,
-
+    shadowRadius: 10,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 3,
     },
 
-    elevation: 2,
+    elevation: 3,
+  },
+
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 
   title: {
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: "700",
     color: "#123B63",
-    marginBottom: 12,
   },
 
-content: {},
+  divider: {
+    height: 1,
+    backgroundColor: "#EEF1F4",
+    marginTop: 14,
+    marginBottom: 10,
+  },
+
+  content: {},
 });
