@@ -3,6 +3,8 @@ import "dayjs/locale/es";
 
 import { StyleSheet, Text, View } from "react-native";
 
+import QuotesService from "@/services/quotes";
+
 dayjs.locale("es");
 
 export default function Header() {
@@ -13,6 +15,9 @@ export default function Header() {
     today.format("dddd").slice(1);
 
   const date = today.format("D [de] MMMM [de] YYYY");
+
+  const quote =
+    QuotesService.getTodayQuote();
 
   return (
     <View style={styles.container}>
@@ -27,6 +32,16 @@ export default function Header() {
       <Text style={styles.date}>
         {date}
       </Text>
+
+      <View style={styles.quoteCard}>
+        <Text style={styles.quote}>
+          "{quote.text}"
+        </Text>
+
+        <Text style={styles.author}>
+          {quote.author}
+        </Text>
+      </View>
 
       <View style={styles.divider} />
     </View>
@@ -59,8 +74,41 @@ const styles = StyleSheet.create({
     color: "#777",
   },
 
+  quoteCard: {
+    marginTop: 24,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 18,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+  },
+
+  quote: {
+    fontSize: 17,
+    lineHeight: 28,
+    color: "#333",
+    fontStyle: "italic",
+    textAlign: "center",
+  },
+
+  author: {
+    marginTop: 14,
+    fontSize: 14,
+    color: "#777",
+    textAlign: "right",
+    fontWeight: "600",
+  },
+
   divider: {
-    marginTop: 18,
+    marginTop: 22,
     height: 1,
     backgroundColor: "#ECECEC",
   },

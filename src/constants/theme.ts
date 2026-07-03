@@ -63,3 +63,21 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+export const Radius = {
+  sm: 10,
+  md: 16,
+  lg: 24,
+} as const;
+
+export const Shadows = {
+  card: {
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    elevation: 3,
+  },
+} as const;

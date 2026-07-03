@@ -1,20 +1,18 @@
-import { sections } from "@/data/sections";
-nimport { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { MaxContentWidth } from "@/constants/theme";
 
 import CheckItem from "@/components/CheckItem";
 import Header from "@/components/Header";
 import ProgressCard from "@/components/ProgressCard";
 import SectionCard from "@/components/SectionCard";
 
+import { Devotion, initialDevotions } from "@/data/devotions";
+import { sections } from "@/data/sections";
+
 import StatisticsService from "@/services/statistics";
-
-import {
-  Devotion,
-  initialDevotions,
-} from "@/data/devotions";
-
 import StorageService from "@/services/storage";
 
 export default function TodayScreen() {
@@ -34,10 +32,7 @@ export default function TodayScreen() {
   }, [devotions, loading]);
 
   async function loadToday() {
-    const data = await StorageService.loadToday();
-
-    setDevotions(data);
-
+    setDevotions(await StorageService.loadToday());
     setLoading(false);
   }
 
@@ -54,26 +49,34 @@ export default function TodayScreen() {
     );
   }
 
-const completed = useMemo(
-  () => StatisticsService.completed(devotions),
-  [devotions]
-);
+  function getSectionDevotions(category: string) {
+    return devotions
+      .filter((item) => item.category === category)
+      .sort((a, b) => a.order - b.order);
+  }
 
-const percentage = useMemo(
-  () => StatisticsService.percentage(devotions),
-  [devotions]
-);
+  const stats = useMemo(() => {
+    const completed =
+      StatisticsService.completed(devotions);
+
+    return {
+      completed,
+      percentage:
+        StatisticsService.percentage(devotions),
+    };
+  }, [devotions]);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         <Header />
 
         <ProgressCard
-          percentage={percentage}
-          completed={completed}
+          percentage={stats.percentage}
+          completed={stats.completed}
           total={devotions.length}
         />
 
@@ -81,26 +84,17 @@ const percentage = useMemo(
           <SectionCard
             key={section.category}
             title={section.title}
+            icon={section.icon}
+            color={section.color}
           >
-            {devotions
-              .filter(
-                (item) =>
-                  item.category === section.category
-              )
-              .sort(
-                (a, b) =>
-                  a.order - b.order
-              )
-              .map((item) => (
-                <CheckItem
-                  key={item.id}
-                  title={item.title}
-                  checked={item.completed}
-                  onToggle={() =>
-                    toggleDevotion(item.id)
-                  }
-                />
-              ))}
+            {getSectionDevotions(section.category).map((item) => (
+              <CheckItem
+                key={item.id}
+                title={item.title}
+                checked={item.completed}
+                onToggle={() => toggleDevotion(item.id)}
+              />
+            ))}
           </SectionCard>
         ))}
       </ScrollView>
@@ -113,5 +107,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F7F8FA",
     paddingHorizontal: 22,
+  },
+
+  content: {
+    maxWidth: MaxContentWidth,
+    width: "100%",
+    alignSelf: "center",
+    paddingBottom: 30,
   },
 });

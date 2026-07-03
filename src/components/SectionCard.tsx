@@ -1,42 +1,51 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
   title: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  color: string;
   children: ReactNode;
 }
 
 export default function SectionCard({
   title,
+  icon,
+  color,
   children,
 }: Props) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.title}>
-          {title}
-        </Text>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: `${color}15` },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name={icon}
+            size={22}
+            color={color}
+          />
+        </View>
+
+        <Text style={styles.title}>{title}</Text>
       </View>
 
       <View style={styles.divider} />
 
-      <View style={styles.content}>
-        {children}
-      </View>
+      {children}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
-
+    backgroundColor: "#FFF",
     borderRadius: 24,
-
-    paddingHorizontal: 22,
-    paddingTop: 18,
-    paddingBottom: 10,
-
+    padding: 22,
     marginBottom: 22,
 
     shadowColor: "#000",
@@ -53,21 +62,27 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+  },
+
+  iconContainer: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 14,
   },
 
   title: {
     fontSize: 20,
     fontWeight: "700",
     color: "#123B63",
+    flex: 1,
   },
 
   divider: {
+    marginVertical: 16,
     height: 1,
     backgroundColor: "#EEF1F4",
-    marginTop: 14,
-    marginBottom: 10,
   },
-
-  content: {},
 });
