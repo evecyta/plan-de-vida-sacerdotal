@@ -6,19 +6,32 @@ import {
   initialDevotions,
 } from "@/data/devotions";
 
-class StorageService {
+import RuleOfLifeService from "@/services/rule-of-life";
 
+class StorageService {
   private getKey(date?: Dayjs) {
     const d = date ?? dayjs();
 
     return `daily_devotions_${d.format("YYYY-MM-DD")}`;
   }
 
-  private createEmptyDay(): Devotion[] {
-    return initialDevotions.map(item => ({
+  private async createDay(): Promise<Devotion[]> {
+    const personal =
+      await RuleOfLifeService.load();
+
+    const official = initialDevotions.map(
+      (item) => ({
+        ...item,
+        completed: false,
+      })
+    );
+
+    const custom = personal.map((item) => ({
       ...item,
       completed: false,
     }));
+
+    return [...official, ...custom];
   }
 
   async loadToday() {
@@ -29,10 +42,10 @@ class StorageService {
     return this.saveDay(dayjs(), devotions);
   }
 
-  async loadDay(date: Dayjs): Promise<Devotion[]> {
-
+  async loadDay(
+    date: Dayjs
+  ): Promise<Devotion[]> {
     try {
-
       const json = await AsyncStorage.getItem(
         this.getKey(date)
       );
@@ -41,63 +54,45 @@ class StorageService {
         return JSON.parse(json);
       }
 
-      return this.createEmptyDay();
-
+      return await this.createDay();
     } catch {
-
-      return this.createEmptyDay();
-
+      return await this.createDay();
     }
-
   }
 
   async saveDay(
     date: Dayjs,
     devotions: Devotion[]
   ) {
-
-    try {
-
-      await AsyncStorage.setItem(
-        this.getKey(date),
-        JSON.stringify(devotions)
-      );
-
-    } catch (e) {
-
-      console.log(e);
-
-    }
-
+    await AsyncStorage.setItem(
+      this.getKey(date),
+      JSON.stringify(devotions)
+    );
   }
 
   async clearToday() {
-
     await AsyncStorage.removeItem(
       this.getKey()
     );
-
   }
 
   async loadLastDays(days: number) {
-
     const result = [];
 
     for (let i = days - 1; i >= 0; i--) {
-
-      const date = dayjs().subtract(i, "day");
+      const date = dayjs().subtract(
+        i,
+        "day"
+      );
 
       result.push({
         date,
         devotions: await this.loadDay(date),
       });
-
     }
 
     return result;
-
   }
-
 }
 
 export default new StorageService();
