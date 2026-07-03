@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
-  Text
+  Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -42,7 +42,9 @@ export default function PlanScreen() {
   function editPractice(id: string) {
     router.push({
       pathname: "/edit-practice",
-      params: { id },
+      params: {
+        id,
+      },
     });
   }
 
@@ -75,9 +77,7 @@ export default function PlanScreen() {
               key={item.id}
               title={item.title}
               category={item.category}
-              onPress={() =>
-                editPractice(item.id)
-              }
+              onPress={() => editPractice(item.id)}
             />
           ))
         )}
@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     width: "100%",
     alignSelf: "center",
-
     padding: 22,
     paddingBottom: 120,
   },
