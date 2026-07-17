@@ -3,25 +3,26 @@ import {
   useRouter,
 } from "expo-router";
 import { useEffect, useState } from "react";
-
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import CategorySelector, {
-  Category,
-} from "@/components/CategorySelector";
+import CategorySelector
+  from "@/components/CategorySelector";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import DangerButton from "@/components/DangerButton";
 import FormError from "@/components/FormError";
 import FormInput from "@/components/FormInput";
+import PageHeader from "@/components/PageHeader";
 import PrimaryButton from "@/components/PrimaryButton";
 
-import { Devotion } from "@/data/devotions";
+import {
+  Devotion,
+  DevotionCategory,
+} from "@/data/devotions";
 
 import RuleOfLifeService from "@/services/rule-of-life";
 
@@ -36,10 +37,15 @@ export default function EditPracticeScreen() {
 
   const [title, setTitle] = useState("");
   const [category, setCategory] =
-    useState<Category>("Personal");
+    useState<DevotionCategory>(
+      "Devociones"
+    );
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const [showDeleteDialog, setShowDeleteDialog] =
+    useState(false);
 
   useEffect(() => {
     if (editing) {
@@ -47,24 +53,26 @@ export default function EditPracticeScreen() {
     }
   }, []);
 
-  async function loadPractice() {
-    const devotion =
-      await RuleOfLifeService.find(id!);
+    async function loadPractice() {
 
-    if (!devotion) {
-      Alert.alert(
-        "Error",
-        "No fue posible cargar la práctica."
+      const devotion =
+        await RuleOfLifeService.find(id!);
+
+      if (!devotion) {
+
+        router.back();
+
+        return;
+
+      }
+
+      setTitle(devotion.title);
+
+      setCategory(
+        devotion.category
       );
 
-      router.replace("/plan");
-
-      return;
     }
-
-    setTitle(devotion.title);
-    setCategory(devotion.category as Category);
-  }
 
   async function save() {
     setError("");
@@ -81,9 +89,7 @@ export default function EditPracticeScreen() {
         const devotion =
           await RuleOfLifeService.find(id!);
 
-        if (!devotion) {
-          throw new Error();
-        }
+        if (!devotion) return;
 
         const updated: Devotion = {
           ...devotion,
@@ -91,19 +97,26 @@ export default function EditPracticeScreen() {
           category,
         };
 
-        await RuleOfLifeService.update(
-          updated
-        );
+        await RuleOfLifeService.update(updated);
       } else {
         await RuleOfLifeService.add({
+
           title: title.trim(),
+
           category,
-          completed: false,
+
+          type: "check",
+
+          target: 1,
+
+          enabled: true,
+
           custom: true,
+
         });
       }
 
-      router.replace("/plan");
+      router.back();
     } catch (err) {
       if (
         err instanceof Error &&
@@ -112,41 +125,20 @@ export default function EditPracticeScreen() {
         setError(
           "Ya existe una práctica con ese nombre."
         );
-      } else {
-        Alert.alert(
-          "Error",
-          "No fue posible guardar la práctica."
-        );
       }
     } finally {
       setSaving(false);
     }
   }
 
-  function remove() {
-    Alert.alert(
-      "Eliminar práctica",
-      "¿Deseas eliminar esta práctica?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: confirmRemove,
-        },
-      ]
-    );
-  }
-
   async function confirmRemove() {
     if (!id) return;
 
+    setShowDeleteDialog(false);
+
     await RuleOfLifeService.remove(id);
 
-    router.replace("/plan");
+    router.back();
   }
 
   return (
@@ -155,11 +147,11 @@ export default function EditPracticeScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>
-          {editing
-            ? "Editar práctica"
-            : "Nueva práctica"}
-        </Text>
+        <PageHeader
+          title={editing ? "Editar práctica" : "Nueva práctica"}
+            subtitle="Agrega una práctica personal para tu Plan de Vida."
+            backRoute="/plan"
+          />
 
         <FormInput
           label="Nombre"
@@ -200,10 +192,24 @@ export default function EditPracticeScreen() {
         {editing && (
           <DangerButton
             title="Eliminar práctica"
-            onPress={remove}
+            onPress={() =>
+              setShowDeleteDialog(true)
+            }
           />
         )}
       </ScrollView>
+
+      <ConfirmDialog
+        visible={showDeleteDialog}
+        title="Eliminar práctica"
+        message="¿Deseas eliminar esta práctica de tu Regla de Vida?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onCancel={() =>
+          setShowDeleteDialog(false)
+        }
+        onConfirm={confirmRemove}
+      />
     </SafeAreaView>
   );
 }
@@ -219,18 +225,11 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
   },
 
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: "#123B63",
-    marginBottom: 28,
-  },
-
   subtitle: {
     fontSize: 16,
     fontWeight: "600",
     color: "#555",
     marginBottom: 12,
-    marginTop: 10,
+    marginTop: 18,
   },
 });

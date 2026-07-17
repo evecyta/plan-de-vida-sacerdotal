@@ -1,23 +1,26 @@
 {
   "expo": {
-    "name": "sacerdote-app",
-    "slug": "sacerdote-app",
+    "name": "Plan de Vida",
+    "slug": "plandevida",
+    "owner": "evecyta",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sacerdoteapp",
+    "scheme": "plandevida",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "bundleIdentifier": "cl.evecyta.plandevida",
+      "icon": "./assets/images/icon.png"
     },
     "android": {
+      "package": "cl.evecyta.plandevida",
+      "predictiveBackGestureEnabled": false,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+        "monochromeImage": "./assets/images/android-icon-monochrome.png",
+        "backgroundColor": "#E6F4FE"
+      }
     },
     "web": {
       "output": "static",
@@ -37,6 +40,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "98de20a2-fad9-4e0b-85d8-c723ef55d79b"
+      }
     }
   }
 }

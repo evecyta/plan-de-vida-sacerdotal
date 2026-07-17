@@ -1,14 +1,59 @@
-import { DarkTheme, DefaultTheme, Slot, ThemeProvider } from "expo-router";
-import { useColorScheme } from "react-native";
+import { useEffect } from "react";
+import { Stack } from "expo-router";
+
+import ToastProvider from "@/providers/ToastProvider";
+import NotificationService from "@/services/notification-service";
 
 export default function RootLayout() {
-  const scheme = useColorScheme();
+
+  useEffect(() => {
+
+    NotificationService.initialize();
+
+  }, []);
 
   return (
-    <ThemeProvider
-      value={scheme === "dark" ? DarkTheme : DefaultTheme}
-    >
-      <Slot />
-    </ThemeProvider>
+
+    <ToastProvider>
+
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="day"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="plan"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="edit-practice"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+      </Stack>
+
+    </ToastProvider>
+
   );
+
 }

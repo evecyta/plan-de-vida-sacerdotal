@@ -1,170 +1,302 @@
 import dayjs from "dayjs";
 import "dayjs/locale/es";
-import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+
+import {
+  useFocusEffect,
+  useRouter,
+} from "expo-router";
+
+import {
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import StatisticsService from "@/services/statistics";
-import StorageService from "@/services/storage";
+import { MaxContentWidth } from "@/constants/theme";
+
+import MonthCalendar, {
+  CalendarItem,
+} from "@/components/MonthCalendar";
+
+import PageHeader from "@/components/PageHeader";
+
+import HistoryService, {
+  HistoryDay,
+} from "@/services/history-service";
 
 dayjs.locale("es");
 
-interface Resume {
-  average: number;
-  completedDays: number;
-  bestDay: number;
-  streak: number;
-}
-
 export default function MonthScreen() {
 
-  const [resume, setResume] = useState<Resume>({
-    average: 0,
-    completedDays: 0,
-    bestDay: 0,
-    streak: 0,
-  });
+  const router = useRouter();
 
-  useEffect(() => {
-    loadMonth();
-  }, []);
+  const [selectedMonth, setSelectedMonth] =
+    useState(dayjs());
 
-  async function loadMonth() {
+  const [history, setHistory] =
+    useState<HistoryDay[]>([]);
+
+  useFocusEffect(
+
+    useCallback(() => {
+
+      load(selectedMonth);
+
+    }, [selectedMonth])
+
+  );
+
+  async function load(
+    month: dayjs.Dayjs
+  ) {
 
     const data =
-      await StorageService.loadLastDays(30);
+      await HistoryService.loadMonth(month);
 
-    let completed = 0;
-    let total = 0;
-
-    let completedDays = 0;
-    let bestDay = 0;
-    let streak = 0;
-    let currentStreak = 0;
-
-    for (const day of data) {
-
-      const percent =
-        StatisticsService.percentage(
-          day.devotions
-        );
-
-      completed +=
-        StatisticsService.completed(
-          day.devotions
-        );
-
-      total +=
-        StatisticsService.total(
-          day.devotions
-        );
-
-      if (percent === 100) {
-        completedDays++;
-      }
-
-      if (percent > bestDay) {
-        bestDay = percent;
-      }
-
-      if (percent > 0) {
-        currentStreak++;
-
-        if (currentStreak > streak) {
-          streak = currentStreak;
-        }
-      } else {
-        currentStreak = 0;
-      }
-
-    }
-
-    setResume({
-
-      average:
-        total === 0
-          ? 0
-          : Math.round(
-              (completed / total) * 100
-            ),
-
-      completedDays,
-
-      bestDay,
-
-      streak,
-
-    });
+    setHistory(data);
 
   }
 
+  const calendar =
+    useMemo<CalendarItem[]>(() => {
+
+      return history.map(day => ({
+
+        day:
+          day.date.date(),
+
+        status:
+
+          day.percentage === 100
+
+            ? "complete"
+
+            : day.percentage > 0
+
+            ? "partial"
+
+            : "empty",
+
+      }));
+
+    }, [history]);
+
+  const average =
+    useMemo(() =>
+
+      HistoryService.average(
+        history
+      ),
+
+    [history]);
+
+  function previousMonth() {
+
+    setSelectedMonth(current =>
+
+      current.subtract(
+        1,
+        "month"
+      )
+
+    );
+
+  }
+
+  function nextMonth() {
+
+    if (
+
+      selectedMonth
+        .startOf("month")
+        .isBefore(
+          dayjs().startOf("month")
+        )
+
+    ) {
+
+      setSelectedMonth(current =>
+
+        current.add(
+          1,
+          "month"
+        )
+
+      );
+
+    }
+
+  }
+
+  const isCurrentMonth =
+    selectedMonth.isSame(
+      dayjs(),
+      "month"
+    );
+
   return (
 
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={styles.container}
+    >
 
       <ScrollView
-        showsVerticalScrollIndicator={false}
+
+        contentContainerStyle={
+          styles.content
+        }
+
+        showsVerticalScrollIndicator={
+          false
+        }
+
       >
 
-        <Text style={styles.title}>
-          Resumen mensual
-        </Text>
+        <PageHeader
 
-        <View style={styles.card}>
+          title="Mes"
 
-          <Text style={styles.label}>
-            Promedio del mes
+          subtitle="Consulta tu Plan de Vida por mes."
+
+          backRoute="/"
+
+        />
+
+        <View
+          style={styles.monthHeader}
+        >
+
+          <Pressable
+
+            style={
+              styles.arrowButton
+            }
+
+            onPress={
+              previousMonth
+            }
+
+          >
+
+            <Text
+              style={styles.arrow}
+            >
+
+              ‹
+
+            </Text>
+
+          </Pressable>
+
+          <Text
+            style={styles.monthTitle}
+          >
+
+            {selectedMonth.format(
+              "MMMM [de] YYYY"
+            )}
+
           </Text>
 
-          <Text style={styles.percent}>
-            {resume.average}%
-          </Text>
+          <Pressable
 
-          <View style={styles.progress}>
-            <View
+            style={[
+
+              styles.arrowButton,
+
+              isCurrentMonth &&
+                styles.arrowDisabled,
+
+            ]}
+
+            disabled={
+              isCurrentMonth
+            }
+
+            onPress={
+              nextMonth
+            }
+
+          >
+
+            <Text
+
               style={[
-                styles.fill,
-                {
-                  width: `${resume.average}%`,
-                },
+
+                styles.arrow,
+
+                isCurrentMonth &&
+                  styles.arrowDisabledText,
+
               ]}
-            />
-          </View>
+
+            >
+
+              ›
+
+            </Text>
+
+          </Pressable>
 
         </View>
 
-        <View style={styles.stats}>
+        <MonthCalendar
 
-          <View style={styles.smallCard}>
-            <Text style={styles.big}>
-              {resume.completedDays}
-            </Text>
+          month={
+            selectedMonth
+          }
 
-            <Text style={styles.small}>
-              Días completos
-            </Text>
-          </View>
+          days={
+            calendar
+          }
 
-          <View style={styles.smallCard}>
-            <Text style={styles.big}>
-              {resume.bestDay}%
-            </Text>
+          onSelectDay={(day) =>
 
-            <Text style={styles.small}>
-              Mejor día
-            </Text>
-          </View>
+            router.push({
 
-        </View>
+              pathname:
+                "/day-history",
 
-        <View style={styles.smallCard}>
+              params: {
 
-          <Text style={styles.big}>
-            {resume.streak}
+                date:
+                  selectedMonth
+                    .date(day)
+                    .format(
+                      "YYYY-MM-DD"
+                    ),
+
+                from: "month",
+
+              },
+
+            })
+
+          }
+
+        />
+                <View style={styles.summary}>
+
+          <Text style={styles.summaryTitle}>
+            Resumen del mes
           </Text>
 
-          <Text style={styles.small}>
-            Mejor racha
+          <Text style={styles.summaryLabel}>
+            Promedio de cumplimiento
+          </Text>
+
+          <Text style={styles.summaryValue}>
+            {average}%
           </Text>
 
         </View>
@@ -180,76 +312,139 @@ export default function MonthScreen() {
 const styles = StyleSheet.create({
 
   container: {
+
     flex: 1,
+
     backgroundColor: "#F7F8FA",
+
+  },
+
+  content: {
+
+    width: "100%",
+
+    maxWidth: MaxContentWidth,
+
+    alignSelf: "center",
+
     padding: 22,
+
+    paddingBottom: 60,
+
   },
 
-  title: {
-    fontSize: 34,
-    fontWeight: "700",
-    color: "#123B63",
-    marginBottom: 22,
-  },
+  monthHeader: {
 
-  card: {
-    backgroundColor: "#FFF",
-    borderRadius: 24,
-    padding: 24,
-    marginBottom: 22,
-  },
-
-  label: {
-    fontSize: 16,
-    color: "#666",
-  },
-
-  percent: {
-    textAlign: "center",
-    fontSize: 52,
-    fontWeight: "700",
-    color: "#123B63",
-    marginVertical: 18,
-  },
-
-  progress: {
-    height: 10,
-    backgroundColor: "#E5E7EB",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-
-  fill: {
-    height: "100%",
-    backgroundColor: "#123B63",
-  },
-
-  stats: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 18,
-  },
 
-  smallCard: {
-    flex: 1,
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    padding: 20,
-    marginHorizontal: 4,
     alignItems: "center",
+
+    justifyContent: "space-between",
+
+    marginBottom: 20,
+
   },
 
-  big: {
-    fontSize: 34,
-    fontWeight: "700",
+  arrowButton: {
+
+    width: 42,
+
+    height: 42,
+
+    borderRadius: 21,
+
+    backgroundColor: "#FFFFFF",
+
+    justifyContent: "center",
+
+    alignItems: "center",
+
+    elevation: 2,
+
+  },
+
+  arrowDisabled: {
+
+    backgroundColor: "#EFEFEF",
+
+  },
+
+  arrow: {
+
+    fontSize: 30,
+
+    fontWeight: "600",
+
     color: "#123B63",
+
   },
 
-  small: {
-    marginTop: 8,
-    fontSize: 15,
-    color: "#666",
+  arrowDisabledText: {
+
+    color: "#C7C7C7",
+
+  },
+
+  monthTitle: {
+
+    flex: 1,
+
     textAlign: "center",
+
+    fontSize: 24,
+
+    fontWeight: "700",
+
+    color: "#123B63",
+
+    textTransform: "capitalize",
+
+  },
+
+  summary: {
+
+    marginTop: 24,
+
+    backgroundColor: "#FFFFFF",
+
+    borderRadius: 22,
+
+    padding: 24,
+
+    elevation: 2,
+
+  },
+
+  summaryTitle: {
+
+    fontSize: 18,
+
+    fontWeight: "700",
+
+    color: "#123B63",
+
+    marginBottom: 12,
+
+  },
+
+  summaryLabel: {
+
+    fontSize: 16,
+
+    color: "#666",
+
+  },
+
+  summaryValue: {
+
+    marginTop: 8,
+
+    fontSize: 44,
+
+    fontWeight: "700",
+
+    color: "#123B63",
+
   },
 
 });

@@ -1,19 +1,75 @@
-const Typography={
+import Colors from "./colors";
 
-  title:30,
+const Typography = {
 
-  h1:24,
+  hero: {
 
-  h2:20,
+    fontSize: 34,
 
-  h3:18,
+    fontWeight: "700" as const,
 
-  body:16,
+    color: Colors.text,
 
-  small:14,
+  },
 
-  tiny:12
+  title: {
 
-}
+    fontSize: 24,
+
+    fontWeight: "700" as const,
+
+    color: Colors.text,
+
+  },
+
+  subtitle: {
+
+    fontSize: 18,
+
+    fontWeight: "600" as const,
+
+    color: Colors.text,
+
+  },
+
+  body: {
+
+    fontSize: 16,
+
+    color: Colors.text,
+
+  },
+
+  button: {
+
+    fontSize: 16,
+
+    fontWeight: "700" as const,
+
+    letterSpacing: 0.2,
+
+    color: Colors.white,
+
+  },
+
+  label: {
+
+    fontSize: 15,
+
+    fontWeight: "600" as const,
+
+    color: Colors.text,
+
+  },
+
+  caption: {
+
+    fontSize: 13,
+
+    color: Colors.textSecondary,
+
+  },
+
+};
 
 export default Typography;

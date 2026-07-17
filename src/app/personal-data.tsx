@@ -1,5 +1,5 @@
 import ProfileScreen from "@/screens/ProfileScreen";
 
-export default function Page() {
+export default function PersonalDataPage() {
   return <ProfileScreen />;
 }

@@ -3,178 +3,352 @@ export type DevotionCategory =
   | "Meditación"
   | "Devociones"
   | "Formación"
-  | "Ofrecimientos"
-  | "Personal";
+  | "Eucaristía"
+  | "Ofrecimientos";
+
+export type DevotionType =
+  | "check"
+  | "counter"
+  | "journal";
 
 export interface Devotion {
+
+  /**
+   * Identificador único.
+   */
   id: string;
+
+  /**
+   * Nombre mostrado.
+   */
   title: string;
+
+  /**
+   * Tipo de práctica.
+   *
+   * check   -> cuenta para el porcentaje
+   * counter -> registra una cantidad
+   * journal -> registra entradas de texto
+   */
+  type: DevotionType;
+
+  /**
+   * Categoría.
+   */
   category: DevotionCategory;
+
+  /**
+   * Orden.
+   */
   order: number;
-  completed: boolean;
+
+  /**
+   * Meta diaria.
+   */
+  target: number;
+
+  /**
+   * Valor realizado hoy.
+   */
+  completed: number;
+
+  /**
+   * ¿Fue creada por el sacerdote?
+   */
   custom: boolean;
+
+  /**
+   * Visible en el plan.
+   */
+  enabled: boolean;
+
 }
 
-export const initialDevotions: Devotion[] = [
-  // Liturgia de las Horas
+export const DEFAULT_DEVOTIONS: Devotion[] = [
+
+  // ------------------------------------------------------------------
+  // LITURGIA
+  // ------------------------------------------------------------------
+
   {
     id: "oficio",
     title: "Oficio de Lectura",
+    type: "check",
     category: "Liturgia",
     order: 1,
-    completed: false,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "laudes",
     title: "Laudes",
+    type: "check",
     category: "Liturgia",
     order: 2,
-    completed: false,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "hora",
     title: "Hora Intermedia",
+    type: "check",
     category: "Liturgia",
     order: 3,
-    completed: false,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "visperas",
     title: "Vísperas",
+    type: "check",
     category: "Liturgia",
     order: 4,
-    completed: false,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "completas",
     title: "Completas",
+    type: "check",
     category: "Liturgia",
     order: 5,
-    completed: false,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
 
-  // Meditación
+  // ------------------------------------------------------------------
+  // MEDITACIÓN
+  // ------------------------------------------------------------------
+
   {
     id: "med1",
     title: "Meditación (mañana)",
+    type: "check",
     category: "Meditación",
-    order: 6,
-    completed: false,
+    order: 1,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "med2",
     title: "Meditación (tarde)",
+    type: "check",
     category: "Meditación",
-    order: 7,
-    completed: false,
+    order: 2,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
 
-  // Devociones
+    // ------------------------------------------------------------------
+  // DEVOCIONES
+  // ------------------------------------------------------------------
+
   {
     id: "rosario",
     title: "Rosario",
+    type: "counter",
     category: "Devociones",
-    order: 8,
-    completed: false,
+    order: 1,
+    target: 0,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "angelus",
     title: "Ángelus",
+    type: "check",
     category: "Devociones",
-    order: 9,
-    completed: false,
+    order: 2,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
-  {
-    id: "santisimo",
-    title: "Visita al Santísimo",
-    category: "Devociones",
-    order: 10,
-    completed: false,
-    custom: false,
-  },
-  {
-    id: "comunion",
-    title: "Comunión espiritual",
-    category: "Devociones",
-    order: 11,
-    completed: false,
-    custom: false,
-  },
+
   {
     id: "jaculatorias",
     title: "Jaculatorias",
+    type: "counter",
     category: "Devociones",
-    order: 12,
-    completed: false,
+    order: 3,
+    target: 0,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
 
-  // Formación
+  // ------------------------------------------------------------------
+  // FORMACIÓN
+  // ------------------------------------------------------------------
+
   {
     id: "papa",
     title: "Palabras del Papa",
+    type: "check",
     category: "Formación",
-    order: 13,
-    completed: false,
+    order: 1,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "lectura",
     title: "Lectura espiritual",
+    type: "check",
     category: "Formación",
-    order: 14,
-    completed: false,
+    order: 2,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "biblia",
     title: "Sagrada Escritura",
+    type: "check",
     category: "Formación",
-    order: 15,
-    completed: false,
+    order: 3,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
 
-  // Ofrecimientos
+  // ------------------------------------------------------------------
+  // EUCARISTÍA
+  // ------------------------------------------------------------------
+
+  {
+    id: "preparacion_misa",
+    title: "Preparación de la Santa Misa",
+    type: "check",
+    category: "Eucaristía",
+    order: 1,
+    target: 1,
+    completed: 0,
+    custom: false,
+    enabled: true,
+  },
+
+  {
+    id: "comunion",
+    title: "Comunión espiritual",
+    type: "check",
+    category: "Eucaristía",
+    order: 2,
+    target: 1,
+    completed: 0,
+    custom: false,
+    enabled: true,
+  },
+
+  {
+    id: "accion_de_gracias",
+    title: "Acción de gracias",
+    type: "check",
+    category: "Eucaristía",
+    order: 3,
+    target: 1,
+    completed: 0,
+    custom: false,
+    enabled: true,
+  },
+
+  {
+    id: "santisimo",
+    title: "Visita al Santísimo",
+    type: "counter",
+    category: "Eucaristía",
+    order: 4,
+    target: 0,
+    completed: 0,
+    custom: false,
+    enabled: true,
+  },
+
+    // ------------------------------------------------------------------
+  // OFRECIMIENTOS
+  // ------------------------------------------------------------------
+
   {
     id: "heroico",
     title: "Minuto heroico",
+    type: "check",
     category: "Ofrecimientos",
-    order: 16,
-    completed: false,
+    order: 1,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "obras",
     title: "Ofrecimiento de obras",
+    type: "check",
     category: "Ofrecimientos",
-    order: 17,
-    completed: false,
+    order: 2,
+    target: 1,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "sacrificio",
     title: "Actos de sacrificio",
+    type: "counter",
     category: "Ofrecimientos",
-    order: 18,
-    completed: false,
+    order: 3,
+    target: 0,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
   {
     id: "caridad",
     title: "Obras de caridad",
+    type: "counter",
     category: "Ofrecimientos",
-    order: 19,
-    completed: false,
+    order: 4,
+    target: 0,
+    completed: 0,
     custom: false,
+    enabled: true,
   },
+
+];
+
+export const DEVOTION_CATEGORIES: DevotionCategory[] = [
+  "Liturgia",
+  "Meditación",
+  "Devociones",
+  "Formación",
+  "Eucaristía",
+  "Ofrecimientos",
 ];

@@ -1,4 +1,7 @@
-light: {
+const BackgroundElement = {
+
+  light: {
+
     primary: "#123B63",
 
     text: "#222",
@@ -12,4 +15,9 @@ light: {
     subtitle: "#777",
 
     success: "#4CAF50",
-}
+
+  },
+
+};
+
+export default BackgroundElement;

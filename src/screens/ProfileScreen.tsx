@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import FormInput from "@/components/FormInput";
+import PageHeader from "@/components/PageHeader";
 import PrimaryButton from "@/components/PrimaryButton";
 
 import SettingsService from "@/services/settings";
 
 export default function ProfileScreen() {
-
   const [name, setName] = useState("");
   const [diocese, setDiocese] = useState("");
   const [bishop, setBishop] = useState("");
@@ -20,8 +23,7 @@ export default function ProfileScreen() {
   }, []);
 
   async function loadProfile() {
-    const profile =
-      await SettingsService.loadProfile();
+    const profile = await SettingsService.loadProfile();
 
     setName(profile.name);
     setDiocese(profile.diocese);
@@ -39,19 +41,19 @@ export default function ProfileScreen() {
       motto,
       photo: "",
     });
-
-    alert("Perfil guardado correctamente.");
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-
-        <Text style={styles.title}>
-          Mi Perfil
-        </Text>
+        <PageHeader
+          title="Mi Perfil"
+          subtitle="Información personal para personalizar tu Plan de Vida."
+          backRoute="/perfil"
+        />
 
         <FormInput
           label="Nombre"
@@ -73,8 +75,8 @@ export default function ProfileScreen() {
 
         <FormInput
           label="Fecha de ordenación"
-          value={ordinationDate}
           placeholder="15-12-2008"
+          value={ordinationDate}
           onChangeText={setOrdinationDate}
         />
 
@@ -89,26 +91,19 @@ export default function ProfileScreen() {
           title="Guardar"
           onPress={save}
         />
-
       </ScrollView>
     </SafeAreaView>
   );
-
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: "#F7F8FA",
+  },
+
+  content: {
     padding: 22,
+    paddingBottom: 60,
   },
-
-  title: {
-    fontSize: 34,
-    fontWeight: "700",
-    color: "#123B63",
-    marginBottom: 28,
-  },
-
 });
