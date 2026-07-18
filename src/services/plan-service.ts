@@ -65,9 +65,9 @@ class PlanService {
   ): Promise<number> {
 
     const next =
-      devotion.completed === 0
-        ? 1
-        : 0;
+      devotion.completed >= devotion.target
+        ? 0
+        : devotion.completed + 1;
 
     await DailyStatusService.updateValue(
       devotion.id,

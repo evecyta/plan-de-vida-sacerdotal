@@ -13,45 +13,47 @@ class RuleOfLifeService {
   // CARGA Y GUARDADO
   // ------------------------------------------------------------
 
-  async load(): Promise<Devotion[]> {
+async load(): Promise<Devotion[]> {
 
-    try {
+  try {
 
-      const json =
-        await AsyncStorage.getItem(
-          STORAGE_KEY
-        );
+    const json = await AsyncStorage.getItem(STORAGE_KEY);
 
-      if (!json) {
+    if (!json) {
 
-        return DEFAULT_DEVOTIONS.map(item => ({
-          ...item,
-        }));
-
-      }
-
-      return JSON.parse(json) as Devotion[];
-
-    } catch {
-
-      return DEFAULT_DEVOTIONS.map(item => ({
+      const defaults = DEFAULT_DEVOTIONS.map(item => ({
         ...item,
+        completed: 0,
+        enabled: item.enabled ?? true,
       }));
+
+      await this.save(defaults);
+
+      return defaults;
 
     }
 
+    const devotions =
+      JSON.parse(json) as Devotion[];
+
+    return devotions.sort(
+      (a, b) => a.order - b.order
+    );
+
+  } catch {
+
+    return [];
+
   }
 
+}
   async save(
     devotions: Devotion[]
   ): Promise<void> {
 
     await AsyncStorage.setItem(
-
       STORAGE_KEY,
-
       JSON.stringify(devotions)
-
     );
 
   }
@@ -71,11 +73,8 @@ class RuleOfLifeService {
   }
 
   async exists(
-
     title: string,
-
     ignoreId?: string
-
   ): Promise<boolean> {
 
     const devotions =
@@ -104,9 +103,7 @@ class RuleOfLifeService {
     return (
 
       devotions.find(
-
         item => item.id === id
-
       ) ?? null
 
     );
@@ -118,39 +115,24 @@ class RuleOfLifeService {
   // ------------------------------------------------------------
 
   async add(
-
     devotion: Omit<
       Devotion,
       "id" | "order" | "completed"
     >
-
   ): Promise<Devotion> {
 
     if (
-
-      await this.exists(
-        devotion.title
-      )
-
+      await this.exists(devotion.title)
     ) {
-
       throw new Error("duplicate");
-
     }
 
     const devotions =
       await this.load();
 
     const maxOrder = Math.max(
-
       0,
-
-      ...devotions.map(
-
-        item => item.order
-
-      )
-
+      ...devotions.map(item => item.order)
     );
 
     const newDevotion: Devotion = {
@@ -163,19 +145,15 @@ class RuleOfLifeService {
 
       completed: 0,
 
-      enabled: true,
+      enabled: devotion.enabled ?? true,
 
       custom: true,
 
     };
 
-    devotions.push(
-      newDevotion
-    );
+    devotions.push(newDevotion);
 
-    await this.save(
-      devotions
-    );
+    await this.save(devotions);
 
     return newDevotion;
 
@@ -186,39 +164,27 @@ class RuleOfLifeService {
   ): Promise<void> {
 
     if (
-
       await this.exists(
-
         devotion.title,
-
         devotion.id
-
       )
-
     ) {
-
       throw new Error("duplicate");
-
     }
 
     const devotions =
       await this.load();
 
     const updated =
-
       devotions.map(item =>
 
         item.id === devotion.id
-
           ? devotion
-
           : item
 
       );
 
-    await this.save(
-      updated
-    );
+    await this.save(updated);
 
   }
 
@@ -230,20 +196,15 @@ class RuleOfLifeService {
       await this.load();
 
     const updated =
-
       devotions.filter(
-
         item => item.id !== id
-
       );
 
-    await this.save(
-      updated
-    );
+    await this.save(updated);
 
   }
 
-    // ------------------------------------------------------------
+  // ------------------------------------------------------------
   // VISIBILIDAD
   // ------------------------------------------------------------
 

@@ -107,37 +107,22 @@ export default function TodayScreen() {
 
   }
 
-  async function toggleDevotion(
-    devotion: Devotion
-  ) {
+async function toggleDevotion(devotion: Devotion) {
 
-    if (devotion.type !== "check") {
-      return;
-    }
+  console.log("Pulsada:", devotion.title);
 
-    const completed =
-      await PlanService.toggleCheck(
-        devotion
-      );
+  const completed = await PlanService.toggleCheck(devotion);
 
-    setDevotions(current =>
+  console.log("Nuevo valor:", completed);
 
-      current.map(item =>
-
-        item.id === devotion.id
-
-          ? {
-              ...item,
-              completed,
-            }
-
-          : item
-
-      )
-
-    );
-
-  }
+  setDevotions(current =>
+    current.map(item =>
+      item.id === devotion.id
+        ? { ...item, completed }
+        : item
+    )
+  );
+}
 
   async function incrementDevotion(
     devotion: Devotion
@@ -221,52 +206,54 @@ export default function TodayScreen() {
 
   }
 
-  async function savePractice(
-    practice: Omit<
-      Devotion,
-      "id" | "order" | "completed"
-    >
-  ) {
+async function savePractice(
+  practice: Omit<
+    Devotion,
+    "id" | "order" | "completed"
+  >
+) {
 
-    try {
+  try {
 
-      if (selectedPractice) {
+    if (selectedPractice) {
+
+      await RuleOfLifeService.update({
+
+        ...selectedPractice,
+
+        ...practice,
+
+      });
+
+    } else {
 
       await RuleOfLifeService.add({
 
         ...practice,
 
       });
-
-      } else {
-
-      await RuleOfLifeService.add({
-
-        ...practice,
-
-      });
-
-      }
-
-      closeModal();
-
-      await reloadPlan();
-
-    } catch (error) {
-
-      Alert.alert(
-
-        "No fue posible guardar",
-
-        error instanceof Error
-          ? error.message
-          : "Ocurrió un error inesperado."
-
-      );
 
     }
 
+    closeModal();
+
+    await reloadPlan();
+
+  } catch (error) {
+
+    Alert.alert(
+
+      "No fue posible guardar",
+
+      error instanceof Error
+        ? error.message
+        : "Ocurrió un error inesperado."
+
+    );
+
   }
+
+}
 
   async function deletePractice(
     practice: Devotion
